@@ -113,16 +113,16 @@ class JumpToPosition(Operator):
             self.report({'INFO'}, f"No position stored for this slot!")
             return {'CANCELLED'}
 
+
         tree_center = context.space_data.edit_tree.view_center
         current_center_position = Vector((tree_center[0], tree_center[1], 0))
         delta  = Vector(jump_object.center) - current_center_position
 
+        # print(f"La recorded position est {Vector(jump_object.center)}")
+        # print(f"La current position est {current_center_position}")
 
-        print(f"La recorded position est {Vector(jump_object.center)}")
-        print(f"La current position est {current_center_position}")
-
-        print(delta)
-        bpy.ops.view2d.pan(deltax=int(delta[0]), deltay=int(delta[1]))
+        # print(delta)
+        bpy.ops.view2d.pan(deltax=int(delta[0]) +1 , deltay=int(delta[1])+1)
         return {'FINISHED'}
 
 ### Registration

@@ -32,98 +32,99 @@ import bpy
 from bpy.types import AddonPreferences
 from bpy.props import BoolProperty, EnumProperty, FloatProperty, StringProperty
 from . import OP_jumper
+from . import keymaps
 
-class JP_prefs(AddonPreferences):
-    bl_idname = __package__
+# class JP_prefs(AddonPreferences):
+#     bl_idname = __package__
 
-        ## tabs
+#         ## tabs
     
-    pref_tabs : EnumProperty(
-        items=(('PREF', "Preferences", "Change some preferences of the modal"),
-               ('KEYS', "Shortcuts", "Customize addon shortcuts")
-               ),
-               default='PREF')
+#     pref_tabs : EnumProperty(
+#         items=(('PREF', "Preferences", "Change some preferences of the modal"),
+#                ('KEYS', "Shortcuts", "Customize addon shortcuts")
+#                ),
+#                default='PREF')
 
-    is_locked_by_default : BoolProperty(
-        name="Lock 3D View By Default",
-        default=True
-    )
+#     is_locked_by_default : BoolProperty(
+#         name="Lock 3D View By Default",
+#         default=True
+#     )
 
-    interpolator_sensitivity : FloatProperty(
-        name="Intepolator Sensivity",
-        default = 0.5,
-        soft_min=0.01,
-        soft_max=1
-    )
+#     interpolator_sensitivity : FloatProperty(
+#         name="Intepolator Sensivity",
+#         default = 0.5,
+#         soft_min=0.01,
+#         soft_max=1
+#     )
 
-    grease_pencil_default_object : StringProperty(
-        name="Grease Pencil Object",
-        description="Default Grease Pencil Object name. Will be used for TVPaint Importer as default object to import keys into",
-        default="Trait"
-    )
+#     grease_pencil_default_object : StringProperty(
+#         name="Grease Pencil Object",
+#         description="Default Grease Pencil Object name. Will be used for TVPaint Importer as default object to import keys into",
+#         default="Trait"
+#     )
 
-    export_folder_default : StringProperty(
-        name="Default Exports folder",
-        description="Folder name for exports, should be relative to work correctly",
-        default="//../EXPORTS/",
-        subtype='DIR_PATH'
-    )
+#     export_folder_default : StringProperty(
+#         name="Default Exports folder",
+#         description="Folder name for exports, should be relative to work correctly",
+#         default="//../EXPORTS/",
+#         subtype='DIR_PATH'
+#     )
 
-    def draw(self, context):
-        layout = self.layout
+#     def draw(self, context):
+#         layout = self.layout
 
-        row= layout.row(align=True)
-        row.prop(self, "pref_tabs", expand=True)
+#         row= layout.row(align=True)
+#         row.prop(self, "pref_tabs", expand=True)
 
-        if self.pref_tabs == 'PREF':
-            box = layout.box()
-            box.label(text='Project settings')
-            box.prop(self, "is_locked_by_default")
+#         if self.pref_tabs == 'PREF':
+#             box = layout.box()
+#             box.label(text='Project settings')
+#             box.prop(self, "is_locked_by_default")
 
-            box.prop(self, "interpolator_sensitivity")
-            box.prop(self, "grease_pencil_default_object")
-            box.prop(self, "export_folder_default")
+#             box.prop(self, "interpolator_sensitivity")
+#             box.prop(self, "grease_pencil_default_object")
+#             box.prop(self, "export_folder_default")
             
-        if self.pref_tabs == 'KEYS':
-            box = layout.box()
-            box.label(text='Shortcuts added by 3.0 Tools with context scope:')
+#         if self.pref_tabs == 'KEYS':
+#             box = layout.box()
+#             box.label(text='Shortcuts added by 3.0 Tools with context scope:')
 
-            prev_key_category = ''
-            for kms in [
-                        UI_gp_draw_keymap.addon_keymaps,
-                        UI_gp_edit_keymap.addon_keymaps,
-                        UI_gp_sculpt_keymap.addon_keymaps,
-                        UI_gp_edit_pie_menu.addon_keymaps,
-                        ]:
+#             prev_key_category = ''
+#             for kms in [
+#                         UI_gp_draw_keymap.addon_keymaps,
+#                         UI_gp_edit_keymap.addon_keymaps,
+#                         UI_gp_sculpt_keymap.addon_keymaps,
+#                         UI_gp_edit_pie_menu.addon_keymaps,
+#                         ]:
 
-                for akm, akmi in kms:
-                    km = context.window_manager.keyconfigs.user.keymaps.get(akm.name)
-                    if not km:
-                        continue
-                    key_category = km.name
-                    # kmi = km.keymap_items.get(akmi.idname) # get only first idname when multiple entry
-                    kmi = None
+#                 for akm, akmi in kms:
+#                     km = context.window_manager.keyconfigs.user.keymaps.get(akm.name)
+#                     if not km:
+#                         continue
+#                     key_category = km.name
+#                     # kmi = km.keymap_items.get(akmi.idname) # get only first idname when multiple entry
+#                     kmi = None
 
-                    ## numbering hack, need a better way to find multi idname user keymaps
-                    for km_item in km.keymap_items:
-                        if km_item.idname == akmi.idname:
-                            kmi = km_item
-                            break
+#                     ## numbering hack, need a better way to find multi idname user keymaps
+#                     for km_item in km.keymap_items:
+#                         if km_item.idname == akmi.idname:
+#                             kmi = km_item
+#                             break
 
-                    if not kmi:
-                        continue
+#                     if not kmi:
+#                         continue
                 
-                    ## show keymap category (ideally grouped by category)
-                    if not prev_key_category:
-                        if key_category:
-                            box.label(text=key_category)
-                    elif key_category and key_category != prev_key_category: # check if has changed singe
-                        box.label(text=key_category)
+#                     ## show keymap category (ideally grouped by category)
+#                     if not prev_key_category:
+#                         if key_category:
+#                             box.label(text=key_category)
+#                     elif key_category and key_category != prev_key_category: # check if has changed singe
+#                         box.label(text=key_category)
 
-                    draw_kmi(km, kmi, box)
-                    prev_key_category = key_category
+#                     draw_kmi(km, kmi, box)
+#                     prev_key_category = key_category
 
-                box.separator()
+#                 box.separator()
 
 
 
@@ -132,11 +133,12 @@ class JP_prefs(AddonPreferences):
 
 
 classes = (
-    JP_prefs,
+    # JP_prefs,
 )
 
 addon_modules = (
     OP_jumper,
+    keymaps,
 )
 
 def register():
