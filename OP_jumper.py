@@ -117,12 +117,15 @@ class JumpToPosition(Operator):
         tree_center = context.space_data.edit_tree.view_center
         current_center_position = Vector((tree_center[0], tree_center[1], 0))
         delta  = Vector(jump_object.center) - current_center_position
-
-        # print(f"La recorded position est {Vector(jump_object.center)}")
-        # print(f"La current position est {current_center_position}")
-
-        # print(delta)
         bpy.ops.view2d.pan(deltax=int(delta[0]) +1 , deltay=int(delta[1])+1)
+
+        print(context.region.view2d)
+        print(context.region.width)
+        print(context.region.height)
+        print(context.region.x)
+        print(context.region.y)
+
+        # bpy.ops.view2d.zoom_border(xmin=0, xmax=200, ymin=0, ymax=100, wait_for_input=False)
         return {'FINISHED'}
 
 ### Registration
